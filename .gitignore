@@ -5,4 +5,4 @@
 .vscode/ipch
 
 # don't commit creds
-include\Credentials.h
+include/Credentials.h

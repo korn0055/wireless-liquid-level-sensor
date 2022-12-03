@@ -5,8 +5,8 @@ LiquidLevelSensor::LiquidLevelSensor(int sensePin, int powerPin, int samplesToAv
     _sensePin(sensePin),
     _powerPin(powerPin),
     _samplesToAverage(samplesToAverage),
-    _warmUpTimeMs(warmUpTimeMs)
-
+    _warmUpTimeMs(warmUpTimeMs),
+    _depthMm(-999.999)
 {
 }
 
@@ -35,8 +35,7 @@ unsigned long LiquidLevelSensor::MeasurePeriodUs()
     pulseLowMs = pulseIn(_sensePin, LOW);
     periodMs = pulseHighMs + pulseLowMs;
 
-    String s = "T=";
-    s += periodMs;
+    String s = "T=" + String(periodMs);
     Serial.println(s);
     return periodMs;
 }
@@ -59,16 +58,9 @@ float LiquidLevelSensor::MeasureDepthMm()
     averagePeriodUs = sum / _samplesToAverage;
     depthMm = CalculateDepth(averagePeriodUs, _K0, _K1);
     
-    String s = "Tavg=";
-    s += averagePeriodUs;
-    s += " us, d=";
-    s += depthMm;
-    s += " mm";
-    s += " K0=";
-    s += _K0;
-    s += " K1=";
-    s += _K1;
+    String s = "Tavg=" + String(averagePeriodUs) +  " us, d=" + String(depthMm) + " mm K0" + String(_K0) + " K1=" + _K1;
     Serial.println(s);
+    _depthMm = depthMm;
     return depthMm;
 }
 

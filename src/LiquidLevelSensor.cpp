@@ -1,12 +1,13 @@
 #include "LiquidLevelSensor.h"
 #include "Arduino.h"
 
-LiquidLevelSensor::LiquidLevelSensor(int sensePin, int powerPin, int samplesToAverage, int warmUpTimeMs)
+LiquidLevelSensor::LiquidLevelSensor(int sensePin, int powerPin, int samplesToAverage, int warmUpTimeMs) :
+    _sensePin(sensePin),
+    _powerPin(powerPin),
+    _samplesToAverage(samplesToAverage),
+    _warmUpTimeMs(warmUpTimeMs)
+
 {
-    _sensePin = sensePin;
-    _powerPin = powerPin;
-    _samplesToAverage = samplesToAverage;
-    _warmUpTimeMs = warmUpTimeMs;
 }
 
 void LiquidLevelSensor::Init()

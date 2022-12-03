@@ -12,8 +12,8 @@ class LiquidLevelSensor
         static float CalculateDepth(float periodUs, float K0, float K1);
 
         unsigned long MeasurePeriodUs();
-        int _sensePin;
-        int _powerPin;
+        const int _sensePin;
+        const int _powerPin;
         int _samplesToAverage;
         float _K0;
         float _K1;

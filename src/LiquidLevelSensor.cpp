@@ -16,6 +16,7 @@ void LiquidLevelSensor::Init()
     pinMode(_powerPin, OUTPUT);
     digitalWrite(_powerPin, LOW);
     LoadCalibration();
+    Serial.println("LiquidLevelSensor initialized.");
 }
 
 void LiquidLevelSensor::LoadCalibration()
@@ -58,7 +59,7 @@ float LiquidLevelSensor::MeasureDepthMm()
     averagePeriodUs = sum / _samplesToAverage;
     depthMm = CalculateDepth(averagePeriodUs, _K0, _K1);
     
-    String s = "Tavg=" + String(averagePeriodUs) +  " us, d=" + String(depthMm) + " mm K0" + String(_K0) + " K1=" + _K1;
+    String s = "Tavg=" + String(averagePeriodUs) +  " us, d=" + String(depthMm) + " mm, K0=" + String(_K0) + " K1=" + _K1;
     Serial.println(s);
     _depthMm = depthMm;
     return depthMm;

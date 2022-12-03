@@ -8,7 +8,7 @@ class LiquidLevelSensor
         void Init();
         float MeasureDepthMm();
         void LoadCalibration();
-        float GetLastDepthMm() {return _depthMm;}
+        float GetLastDepthMm() const {return _depthMm;}
     private:
         static float CalculateDepth(float periodUs, float K0, float K1);
 

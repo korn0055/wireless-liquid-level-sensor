@@ -6,11 +6,12 @@
 // Conversion factor for seconds to microseconds
 #define S_TO_US_FACTOR 1000000ULL
 
-int sense_555_pin = 14;
-int power_555_pin = 32;
-int analog_vbatt_pin = A13;
-int measurement_interval_ms = 10000;
-int deep_sleep_duration_seconds = 15;
+const int sense_555_pin = 14;
+const int power_555_pin = 32;
+const int analog_vbatt_pin = A13;
+const int measurement_interval_ms = 1000;
+const int deep_sleep_duration_seconds = 15;
+int min_awake_time_seconds = 0;
 
 LiquidLevelSensor sensor(sense_555_pin, power_555_pin, 10, 50);
 BatteryMonitor batteryMonitor(analog_vbatt_pin, 3.3);
@@ -18,6 +19,7 @@ AdafruitIoFeed feed;
 
 bool ProcessDepthSensing();
 void EnterDeepSleep(unsigned int secondsToSleep);
+void PrintWakeupReason();
 
 // the setup function runs once when you press reset or power the board
 void setup()
@@ -25,6 +27,13 @@ void setup()
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, HIGH);
     Serial.begin(9600);
+    PrintWakeupReason();
+    if(esp_sleep_get_wakeup_cause() != ESP_SLEEP_WAKEUP_TIMER)
+    {
+        // stay awake longer to allow for OTA update
+        min_awake_time_seconds = 20;
+    }
+    Serial.println("min_awake_time_seconds=" + String(min_awake_time_seconds));
     sensor.Init();
     batteryMonitor.Init();
     feed.Setup();
@@ -43,7 +52,7 @@ void loop()
       {
         Serial.println("deep sleep disabled");
       }
-      else
+      else if(millis() > (min_awake_time_seconds * 1000))
       {
         EnterDeepSleep(deep_sleep_duration_seconds);
       }
@@ -101,6 +110,22 @@ void EnterDeepSleep(unsigned int secondsToSleep)
     Serial.end();
     digitalWrite(LED_BUILTIN, LOW);
     esp_deep_sleep_start();
+}
+
+void PrintWakeupReason()
+{
+  esp_sleep_wakeup_cause_t wakeup_reason;
+
+  wakeup_reason = esp_sleep_get_wakeup_cause();
+
+  switch(wakeup_reason){
+    case ESP_SLEEP_WAKEUP_EXT0 : Serial.println("Wakeup caused by external signal using RTC_IO"); break;
+    case ESP_SLEEP_WAKEUP_EXT1 : Serial.println("Wakeup caused by external signal using RTC_CNTL"); break;
+    case ESP_SLEEP_WAKEUP_TIMER : Serial.println("Wakeup caused by timer"); break;
+    case ESP_SLEEP_WAKEUP_TOUCHPAD : Serial.println("Wakeup caused by touchpad"); break;
+    case ESP_SLEEP_WAKEUP_ULP : Serial.println("Wakeup caused by ULP program"); break;
+    default : Serial.printf("Wakeup was not caused by deep sleep: %d\n",wakeup_reason); break;
+  }
 }
 
 

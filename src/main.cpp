@@ -9,8 +9,8 @@
 const int sense_555_pin = 14;
 const int power_555_pin = 32;
 const int analog_vbatt_pin = A13;
-const int measurement_interval_ms = 1000;
-const int deep_sleep_duration_seconds = 15;
+const int measurement_interval_ms = 10000;
+const int deep_sleep_duration_seconds = 15*60;
 int min_awake_time_seconds = 0;
 
 LiquidLevelSensor sensor(sense_555_pin, power_555_pin, 10, 50);
